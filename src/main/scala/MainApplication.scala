@@ -1,20 +1,19 @@
 import org.apache.spark.sql._
-import utils._
-import org.apache.spark.sql.SaveMode
+import utils.{Commons, Distance}
 
 object MainApplication {
 
-  val datasetsPath = "/datasets/big/"
-  val fileName = "itineraries-sample02.csv"
-  val outputPathJobNotOptimized = "/output/jobNotOptimized"
-  val outputPathJobOptimized = "/output/jobOptimized"
+  private val datasetsPath = "/datasets/big/"
+  private val fileName = "itineraries-sample02.csv"
+  private val outputPathJobNotOptimized = "/output/jobNotOptimized"
+  private val outputPathJobOptimized = "/output/jobOptimized"
 
   def main(args: Array[String]): Unit = {
-    val spark = SparkSession.builder.appName("Flight job").getOrCreate()
+    val spark = SparkSession.builder.appName("Flight Job").getOrCreate()
     val sqlContext = spark.sqlContext
     import sqlContext.implicits._
 
-    if(args.length < 2){
+    if (args.length < 2) {
       println("The first parameter should indicate the deployment mode (\"local\" or \"remote\")")
       println("The second parameter should indicate the job (1 for the job not optimized, 2 for the job optimized)")
       return
@@ -26,16 +25,16 @@ object MainApplication {
       writeMode = "remote"
     }
     val job = args(1)
-
-    val rddFlights = spark.sparkContext
-      .textFile(Commons.getDatasetPath(deploymentMode, datasetsPath + fileName))
-      .flatMap(FlightParser.parseFlightLine)
-      .map(flight => ((flight.startingAirport, flight.destinationAirport),
-        (flight.totalTravelDistance, flight.flightMonth, flight.totalFare)))
-    val numClasses = 3
+    val numClasses = Distance.values.size
 
     if (job=="1") {
       println("Job Not Optimized")
+
+      val rddFlights = spark.sparkContext
+        .textFile(Commons.getDatasetPath(deploymentMode, datasetsPath + fileName))
+        .flatMap(FlightParser.parseFlightLine)
+        .map(flight => ((flight.startingAirport, flight.destinationAirport),
+          (flight.totalTravelDistance, flight.flightMonth, flight.totalFare)))
 
       val avgDistancesNO = rddFlights
         .aggregateByKey((0.0, 0))(
@@ -54,9 +53,9 @@ object MainApplication {
 
       avgDistancesNO
         .mapValues {
-          case d if d < minDistanceNO + rangeNO => "Breve"
-          case d if d < minDistanceNO + (numClasses - 1) * rangeNO => "Media"
-          case _ => "Lunga"
+          case d if d < minDistanceNO + rangeNO => Distance.short
+          case d if d < minDistanceNO + (numClasses - 1) * rangeNO => Distance.medium
+          case _ => Distance.long
         }
         .join(rddFlights)
         .map { case (_, (classification, (_, month, totalFare))) => ((month, classification), (totalFare, 1)) }
