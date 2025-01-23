@@ -15,7 +15,9 @@ I datasets usati per questo progetto sono scaricabili dalla seguente cartella di
 - `src/` contiene il codice sorgente ed è suddiviso in linguaggio di programmazione
   - `python/` include i seguenti notebook:
     - [data-exploration.ipynb](src/main/python/understand_dataset/data-exploration.ipynb): dedicato alla comprensione e all'analisi esplorativa dei dati
-    - [flight-prices.ipynb](src/main/python/understand_dataset/flight-prices.ipynb): implementa il *job* proposto, sia in versione non ottimizzata e una ottimizzata
+    - [flight-prices.ipynb](src/main/python/understand_dataset/flight-prices.ipynb): implementa il *job* proposto, sia in versione non ottimizzata sia in versione ottimizzata
   - `scala/`
 - `history/` contiene la cronologia dell'esecuzione dei *job*
+  - [README](history/README.md)
 - `reports/` contiene report generati con Power BI
+  - [README](reports/README.md)
