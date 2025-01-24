@@ -4,8 +4,14 @@ import org.apache.spark.sql.SparkSession
 
 import java.io.InputStream
 
+/**
+ * Utility object providing common functionality for managing dataset paths and configuring the Spark context.
+ */
 object Commons {
 
+  /**
+   * Enumeration representing the possible deployment modes for the application.
+   */
   private object DeploymentMode extends Enumeration {
     type DeploymentMode = Value
     val local: Value = Value("local")
@@ -13,6 +19,11 @@ object Commons {
     val sharedRemote: Value = Value("sharedRemote")
   }
 
+  /**
+   * Initializes the Spark context configuration based on the specified deployment mode.
+   * @param deploymentMode The deployment mode ("local", "remote", "sharedRemote").
+   * @param spark The active SparkSession instance.
+   */
   def initializeSparkContext(deploymentMode: String, spark: SparkSession): Unit = {
     if (DeploymentMode.withName(deploymentMode) == DeploymentMode.remote){
       val stream: InputStream = getClass.getResourceAsStream(Config.credentialsPath)
@@ -26,11 +37,18 @@ object Commons {
     }
   }
 
+  /**
+   * Computes the dataset path based on the deployment mode and the specified local or remote paths.
+   * @param deploymentMode The deployment mode ("local", "remote", "sharedRemote").
+   * @param localPath The relative path to the dataset when operating in local deployment mode.
+   * @param remotePath The relative path to the dataset when operating in shared or non-shared remote deployment modes.
+   * @return A string representing the resolved dataset path.
+   */
   private def getDatasetPath(deploymentMode: String, localPath: String, remotePath: String): String = {
-    if (DeploymentMode.withName(deploymentMode) == DeploymentMode.local) {
+    if (deploymentMode == DeploymentMode.local.toString) {
       return "file://" + Config.projectDir + "/" + localPath
     }
-    else if (DeploymentMode.withName(deploymentMode) == DeploymentMode.sharedRemote) {
+    else if (deploymentMode == DeploymentMode.sharedRemote.toString) {
       return "s3a://" + Config.s3sharedBucketName + "/" + remotePath
     }
     else {
@@ -38,6 +56,12 @@ object Commons {
     }
   }
 
+  /**
+   * Returns the dataset path based on the deployment mode and the specified path.
+   * @param deploymentMode The deployment mode ("local", "remote", "sharedRemote").
+   * @param path The dataset path provided as input.
+   * @return A string representing the resolved dataset path.
+   */
   def getDatasetPath(deploymentMode: String, path: String): String = {
     return getDatasetPath(deploymentMode, path, path)
   }

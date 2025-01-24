@@ -23,6 +23,7 @@ I datasets usati per questo progetto sono scaricabili dalla seguente cartella di
     - `utils/`
       - [Commons.scala](src/main/scala/utils/Commons.scala)
       - [Config.scala](src/main/scala/utils/Config.scala)
+      - [Distance.scala](src/main/scala/utils/Distance.scala)
 - `history/` contiene la cronologia dell'esecuzione dei *job*
   - [README.md](history/README.md)
 - `reports/` contiene report generati con Power BI

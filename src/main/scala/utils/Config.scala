@@ -4,7 +4,6 @@ package utils
  * The configurations of the application.
  */
 object Config {
-
   /**
    * The local directory containing this repository.
    */
