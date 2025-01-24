@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-AWS_PROFILE="giulia"
+read -p "Enter AWS PROFILE:" AWS_PROFILE
 
 echo "Configure profile"
 aws configure --profile "$AWS_PROFILE"
