@@ -4,7 +4,7 @@ import utils.{Commons, Distance}
 object MainApplication {
 
   private val datasetsPath = "/datasets/big/"
-  private val fileName = "itineraries-sample02.csv"
+  private val fileName = "itineraries-sample33.csv"
   private val outputPathJobNotOptimized = "/output/jobNotOptimized"
   private val outputPathJobOptimized = "/output/jobOptimized"
 
