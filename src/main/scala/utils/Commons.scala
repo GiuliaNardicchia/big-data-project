@@ -46,13 +46,13 @@ object Commons {
    */
   private def getDatasetPath(deploymentMode: String, localPath: String, remotePath: String): String = {
     if (deploymentMode == DeploymentMode.local.toString) {
-      return "file://" + Config.projectDir + "/" + localPath
+      "file://" + Config.projectDir + "/" + localPath
     }
     else if (deploymentMode == DeploymentMode.sharedRemote.toString) {
-      return "s3a://" + Config.s3sharedBucketName + "/" + remotePath
+      "s3a://" + Config.s3sharedBucketName + "/" + remotePath
     }
     else {
-      return "s3a://" + Config.s3bucketName + "/" + remotePath
+      "s3a://" + Config.s3bucketName + "/" + remotePath
     }
   }
 
@@ -63,6 +63,7 @@ object Commons {
    * @return A string representing the resolved dataset path.
    */
   def getDatasetPath(deploymentMode: String, path: String): String = {
-    return getDatasetPath(deploymentMode, path, path)
+    println(getDatasetPath(deploymentMode, path, path))
+    getDatasetPath(deploymentMode, path, path)
   }
 }

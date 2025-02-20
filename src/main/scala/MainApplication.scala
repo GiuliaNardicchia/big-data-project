@@ -3,13 +3,13 @@ import utils.{Commons, Distance}
 
 object MainApplication {
 
-  private val datasetsPath = "/datasets/big/"
-  private val fileName = "itineraries-sample33.csv"
-  private val outputPathJobNotOptimized = "/output/jobNotOptimized"
-  private val outputPathJobOptimized = "/output/jobOptimized"
+  private val datasetsPath = "datasets/" // big/
+  private val fileName = "itineraries-sample02.csv"
+  private val outputPathJobNotOptimized = "output/jobNotOptimized"
+  private val outputPathJobOptimized = "output/jobOptimized"
 
   def main(args: Array[String]): Unit = {
-    val spark = SparkSession.builder.appName("Flight Job").getOrCreate()
+    val spark = SparkSession.builder.appName("Flight Prices Job").getOrCreate()
     val sqlContext = spark.sqlContext
     import sqlContext.implicits._
 
@@ -18,6 +18,10 @@ object MainApplication {
       println("The second parameter should indicate the job (1 for the job not optimized, 2 for the job optimized)")
       return
     }
+    // local 1 -> input e output
+    // remote 1 -> input e output
+    // shared local 1 -> input shared + output local
+    // shared remote 1 -> input shared + output remote
 
     val deploymentMode = args(0)
     var writeMode = deploymentMode
@@ -26,6 +30,19 @@ object MainApplication {
     }
     val job = args(1)
     val numClasses = Distance.values.size
+
+    if (deploymentMode == "local") {
+      println(spark.sparkContext.getConf.get("spark.driver.memory"))      // 4g
+      println(spark.sparkContext.getConf.get("spark.driver.cores"))       // 4
+    }
+
+    if (deploymentMode == "remote") {
+      println(spark.sparkContext.getConf.get("spark.executor.memory"))    // 5g
+      println(spark.sparkContext.getConf.get("spark.executor.cores"))     // 2
+      println(spark.sparkContext.getConf.get("spark.executor.instances")) // 6
+    }
+
+    println(spark.sparkContext.defaultParallelism) // local:4 remote: 2
 
     if (job=="1") {
       println("Job Not Optimized")

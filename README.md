@@ -46,7 +46,7 @@ Per avviare una nuova sessione su AWS, eseguire lo script [start_aws_session.sh]
 - `AWS Session Token` *AWS details > AWS CLI > aws_session_token*
 
 ```shell
-./aws/start_aws_session.sh
+  ./aws/start_aws_session.sh
 ```
 
 Eseguire lo script [create_aws_cluster.sh](/aws/create_aws_cluster.sh) per avviare un cluster Amazon EMR utilizzando Hadoop e Spark, avente le seguenti caratteristiche:
@@ -58,13 +58,13 @@ Eseguire lo script [create_aws_cluster.sh](/aws/create_aws_cluster.sh) per avvia
 
 In *input* verrà richiesto l'inserimento di: `AWS PROFILE NAME` e `KEY PAIR NAME`. Una volta creato il cluster verrà visualizzato il `ClusterID` e lo script rimarrà in esecuzione fino a quando lo stato del Cluster non sarà passato da `STARTING` a `WAITING`, viene effettuato un controllo ogni 10 secondi. Al termine, verrà mostrato su console anche il `PublicDNS`, utile in seguito per l'`SSH Configuration`.
 ```shell
-./aws/create_aws_cluster.sh
+  ./aws/create_aws_cluster.sh
 ```
 
 ## Local configuration
 Per ottenere il *.jar* dell'applicazione, eseguire a linea di comando:
 ```shell
-./gradlew
+  ./gradlew
 ```
 Verrà salvato all'interno della cartella `build/libs/`.
 
@@ -95,7 +95,7 @@ Sotto la voce *Additional customization*, selezionare *Spark configuration* ed *
 - `Spark configuration`
   - `Cluster manager`: `Hadoop YARN`
   - `Deploy mode`: `Cluster` oppure `Client`
-- `Executor parameters`
-  - `Executor memory`: `5g`
+- `Executor parameters` 
+  - `Executor cores`: `2` 
   - `Executor number`: `6`
-  - `Executor cores`: `2`
+  - `Executor memory`: `5g`
