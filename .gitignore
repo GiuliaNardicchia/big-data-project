@@ -4,6 +4,7 @@ metastore_db/
 output/
 datasets/big/
 keys/
+venv/
 
 # Created by https://www.toptal.com/developers/gitignore/api/java,linux,macos,gradle,eclipse,windows,intellij,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,linux,macos,gradle,eclipse,windows,intellij,jupyternotebooks
