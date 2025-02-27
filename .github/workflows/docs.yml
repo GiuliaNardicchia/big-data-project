@@ -15,16 +15,18 @@ jobs:
         with:
           lfs: true
 
-      - name: Setup Eclipse Adoptium Java 17.0.6
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Gradle
-        uses: gradle/actions/wrapper-validation@v3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10'
+      - name: Build with Gradle
+        run: ./gradlew build
 
       - name: Generate Scaladoc
         run: ./gradlew scaladoc
