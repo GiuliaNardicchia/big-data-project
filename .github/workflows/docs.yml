@@ -19,8 +19,8 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Gradle (se necessario)
-        uses: gradle/wrapper-validation-action@v1
+      - name: Install Gradle
+        uses: gradle/actions/wrapper-validation@v3
         with:
           gradle-version: '8.10'
 
