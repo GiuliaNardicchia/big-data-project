@@ -33,3 +33,5 @@ jobs:
         with:
           branch: gh-pages
           build_dir: build/docs/scaladoc/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
