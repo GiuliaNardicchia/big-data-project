@@ -5,10 +5,6 @@ on:
     branches:
       - master
 
-permissions:
-  contents: write
-  pages: write
-
 jobs:
   build-docs:
     runs-on: ubuntu-latest
@@ -16,8 +12,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          lfs: true
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -31,14 +25,11 @@ jobs:
       - name: Grant execute permission to Gradle wrapper
         run: chmod +x gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew build --info
-
       - name: Generate Scaladoc
         run: ./gradlew scaladoc --info
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: crazy-max/ghaction-github-pages@v4
         with:
           branch: gh-pages
-          folder: build/docs/scaladoc/
+          build_dir: build/docs/scaladoc/
