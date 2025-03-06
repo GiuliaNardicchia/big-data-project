@@ -1,4 +1,5 @@
 import org.apache.spark.sql._
+import utils.{Commons, DistanceType}
 
 /**
  * Main application to run the jobs.
