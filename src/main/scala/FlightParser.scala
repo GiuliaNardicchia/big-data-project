@@ -9,9 +9,9 @@ object FlightParser extends Serializable {
   private val comma = ","
 
   /**
-   * Convert from date (String) to month (Int).
-   * @param dateString the date
-   * @return the month
+   * Convert from date to month.
+   * @param dateString the date.
+   * @return the month.
    */
   private def monthFromDate(dateString: String): Int = {
     val sdf = new SimpleDateFormat("yyyy-MM-dd")
@@ -22,9 +22,9 @@ object FlightParser extends Serializable {
   }
 
   /**
-   * Function to parse flights records.
-   * @param line that has to be parsed
-   * @return Flight object, None in case of input errors
+   * Parse a flight record.
+   * @param line The line that has to be parsed.
+   * @return None in case of input errors, Flight otherwise.
    */
   def parseFlightLine(line: String): Option[Flight] = {
     try {
@@ -62,7 +62,7 @@ object FlightParser extends Serializable {
       )
     } catch {
       case e: Exception =>
-        // println(s"Errore durante il parsing della riga '$line': ${e.getMessage}")
+//        println(s"Error during parsing of the line '$line': ${e.getMessage}")
         None
     }
   }

@@ -13,7 +13,7 @@ object Config {
    */
   val s3sharedBucketName :String = "unibo-bd2425-gnardicchia"
   /**
-   * The name of your bucket on AWS S3.
+   * The name of the bucket on AWS S3.
    */
   val s3bucketName :String = "unibo-bd2425-gnardicchia"
   /**

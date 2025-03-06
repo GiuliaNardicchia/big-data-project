@@ -1,16 +1,12 @@
 package utils
 
-import org.apache.spark.sql.SparkSession
-
-import java.io.InputStream
-
 /**
- * Utility object providing common functionality for managing dataset paths and configuring the Spark context.
+ * The Commons object provides common functionality for managing dataset paths and configuring the Spark context.
  */
 object Commons {
 
   /**
-   * Enumeration representing the possible deployment modes for the application.
+   * Enumeration representing the possible deployment mode for the application ("local", "remote", "sharedRemote").
    */
   private object DeploymentMode extends Enumeration {
     type DeploymentMode = Value
@@ -21,7 +17,7 @@ object Commons {
 
   /**
    * Initializes the Spark context configuration based on the specified deployment mode.
-   * @param deploymentMode The deployment mode ("local", "remote", "sharedRemote").
+   * @param deploymentMode The deployment mode.
    * @param spark The active SparkSession instance.
    */
   def initializeSparkContext(deploymentMode: String, spark: SparkSession): Unit = {
@@ -39,7 +35,7 @@ object Commons {
 
   /**
    * Computes the dataset path based on the deployment mode and the specified local or remote paths.
-   * @param deploymentMode The deployment mode ("local", "remote", "sharedRemote").
+   * @param deploymentMode The deployment mode.
    * @param localPath The relative path to the dataset when operating in local deployment mode.
    * @param remotePath The relative path to the dataset when operating in shared or non-shared remote deployment modes.
    * @return A string representing the resolved dataset path.
@@ -58,7 +54,7 @@ object Commons {
 
   /**
    * Returns the dataset path based on the deployment mode and the specified path.
-   * @param deploymentMode The deployment mode ("local", "remote", "sharedRemote").
+   * @param deploymentMode The deployment mode.
    * @param path The dataset path provided as input.
    * @return A string representing the resolved dataset path.
    */

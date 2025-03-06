@@ -1,6 +1,8 @@
 import org.apache.spark.sql._
-import utils.{Commons, Distance}
 
+/**
+ * Main application to run the jobs.
+ */
 object MainApplication {
 
   private val datasetsPath = "datasets/" // big/
@@ -29,7 +31,7 @@ object MainApplication {
       writeMode = "remote"
     }
     val job = args(1)
-    val numClasses = Distance.values.size
+    val numClasses = DistanceType.values.size
 
     if (deploymentMode == "local") {
       println(spark.sparkContext.getConf.get("spark.driver.memory"))      // 4g
@@ -70,9 +72,9 @@ object MainApplication {
 
       avgDistancesNO
         .mapValues {
-          case d if d < minDistanceNO + rangeNO => Distance.short
-          case d if d < minDistanceNO + (numClasses - 1) * rangeNO => Distance.medium
-          case _ => Distance.long
+          case d if d < minDistanceNO + rangeNO => DistanceType.short
+          case d if d < minDistanceNO + (numClasses - 1) * rangeNO => DistanceType.medium
+          case _ => DistanceType.long
         }
         .join(rddFlights)
         .map { case (_, (classification, (_, month, totalFare))) => ((month, classification), (totalFare, 1)) }
