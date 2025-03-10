@@ -2,7 +2,7 @@ src/main/resources/aws_credentials.txt
 .idea/
 metastore_db/
 output/
-datasets/big/
+datasets/
 keys/
 venv/
 
