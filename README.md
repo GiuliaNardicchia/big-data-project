@@ -16,7 +16,7 @@ I datasets usati per questo progetto sono stati campionati sul dataset originale
 ## Organizzazione di file e cartelle
 - `src/` contiene il codice sorgente ed è suddiviso in linguaggio di programmazione
   - `python/` include i seguenti notebook:
-    - [data-exploration.ipynb](src/main/python/understand_dataset/data-exploration.ipynb): dedicato alla comprensione e all'analisi esplorativa dei dati
+    - [data-exploration.ipynb](src/main/python/data-exploration.ipynb): dedicato alla comprensione e all'analisi esplorativa dei dati
     - [main-notebook.ipynb](src/main/python/main-notebook.ipynb): implementa il *job* proposto, sia in versione non ottimizzata sia in versione ottimizzata
   - `scala/` contiene tutti i file che compongono l'applicazione principale
     - [Flight.scala](src/main/scala/Flight.scala)
@@ -25,7 +25,7 @@ I datasets usati per questo progetto sono stati campionati sul dataset originale
     - `utils/`
       - [Commons.scala](src/main/scala/utils/Commons.scala)
       - [Config.scala](src/main/scala/utils/Config.scala)
-      - [Distance.scala](src/main/scala/utils/Distance.scala)
+      - [Distance.scala](src/main/scala/utils/DistanceType.scala)
 - `history/` contiene la cronologia dell'esecuzione dei *job*
   - [README.md](history/README.md)
 - `reports/` contiene report generati con Power BI
