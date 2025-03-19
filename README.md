@@ -25,16 +25,14 @@ I datasets usati per questo progetto sono stati campionati sul dataset originale
     - `utils/`
       - [Commons.scala](src/main/scala/utils/Commons.scala)
       - [Config.scala](src/main/scala/utils/Config.scala)
-      - [Distance.scala](src/main/scala/utils/DistanceType.scala)
+      - [DistanceType.scala](src/main/scala/utils/DistanceType.scala)
+- `aws/` contiene gli script per avviare una sessione su [Amazon Web Services](https://www.awsacademy.com/vforcesite/LMS_Login) e creare un cluster, spiegati nella sezione [AWS](#amazon-web-services-aws) che segue
+  - [start_aws_session.sh](aws/start_aws_session.sh)
+  - [create_aws_cluster.sh](aws/create_aws_cluster.sh)
 - `history/` contiene la cronologia dell'esecuzione dei *job*
   - [README.md](history/README.md)
 - `reports/` contiene report generati con Power BI
   - [README.md](reports/README.md)
-- `datasets/`
-  - [itineraries-sample02.csv](datasets/itineraries-sample02.csv) l'unico *sample* che è stato aggiunto alla *repository* tramite Git File Large Storage (*glfs*).
-- `aws/` contiene gli script per avviare una sessione su [Amazon Web Services](https://www.awsacademy.com/vforcesite/LMS_Login) e creare un cluster, spiegati nella sezione [AWS](#amazon-web-services-aws) che segue
-  - [create_aws_cluster.sh](aws/create_aws_cluster.sh)
-  - [start_aws_session.sh](aws/start_aws_session.sh)
 
 ## Amazon Web Services (AWS)
 I seguenti *script* sono stati creati per gestire più facilmente le operazioni da effettuare a linea di comando. Sono stati eseguiti con la *shell* `Git Bash`.
