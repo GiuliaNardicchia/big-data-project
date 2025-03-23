@@ -21,13 +21,14 @@ object Commons {
 
   /**
    * Initializes the Spark context configuration based on the specified deployment mode.
+   *
    * @param deploymentMode The deployment mode.
-   * @param spark The active SparkSession instance.
+   * @param spark          The active SparkSession instance.
    */
   def initializeSparkContext(deploymentMode: String, spark: SparkSession): Unit = {
-    if (DeploymentMode.withName(deploymentMode) == DeploymentMode.remote){
+    if (DeploymentMode.withName(deploymentMode) == DeploymentMode.remote) {
       val stream: InputStream = getClass.getResourceAsStream(Config.credentialsPath)
-      val lines = scala.io.Source.fromInputStream( stream ).getLines.toList
+      val lines = scala.io.Source.fromInputStream(stream).getLines.toList
 
       spark.sparkContext.hadoopConfiguration.set("fs.s3a.fast.upload", "true")
       spark.sparkContext.hadoopConfiguration.set("fs.s3a.fast.upload.buffer", "bytebuffer")
@@ -39,9 +40,10 @@ object Commons {
 
   /**
    * Computes the dataset path based on the deployment mode and the specified local or remote paths.
+   *
    * @param deploymentMode The deployment mode.
-   * @param localPath The relative path to the dataset when operating in local deployment mode.
-   * @param remotePath The relative path to the dataset when operating in shared or non-shared remote deployment modes.
+   * @param localPath      The relative path to the dataset when operating in local deployment mode.
+   * @param remotePath     The relative path to the dataset when operating in shared or non-shared remote deployment modes.
    * @return A string representing the resolved dataset path.
    */
   private def getDatasetPath(deploymentMode: String, localPath: String, remotePath: String): String = {
@@ -58,8 +60,9 @@ object Commons {
 
   /**
    * Returns the dataset path based on the deployment mode and the specified path.
+   *
    * @param deploymentMode The deployment mode.
-   * @param path The dataset path provided as input.
+   * @param path           The dataset path provided as input.
    * @return A string representing the resolved dataset path.
    */
   def getDatasetPath(deploymentMode: String, path: String): String = {

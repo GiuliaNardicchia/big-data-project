@@ -10,6 +10,7 @@ object FlightParser extends Serializable {
 
   /**
    * Convert from date to month.
+   *
    * @param dateString the date.
    * @return the month.
    */
@@ -23,6 +24,7 @@ object FlightParser extends Serializable {
 
   /**
    * Parse a flight record.
+   *
    * @param line The line that has to be parsed.
    * @return None in case of input errors, Flight otherwise.
    */
@@ -62,7 +64,7 @@ object FlightParser extends Serializable {
       )
     } catch {
       case e: Exception =>
-//        println(s"Error during parsing of the line '$line': ${e.getMessage}")
+        //        println(s"Error during parsing of the line '$line': ${e.getMessage}")
         None
     }
   }
