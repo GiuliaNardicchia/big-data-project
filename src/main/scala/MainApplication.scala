@@ -13,6 +13,7 @@ object MainApplication {
   private val fileName = "itineraries-sample02.csv"
   private val outputPathJobNotOptimized = "output/jobNotOptimized"
   private val outputPathJobOptimized = "output/jobOptimized"
+  private val distanceTypes = DistanceType.values.toArray
   private val numClasses = DistanceType.values.size
   private val logger = LoggerFactory.getLogger(this.getClass)
   private val numParams = 2
@@ -83,9 +84,9 @@ object MainApplication {
 
     avgDistances
       .mapValues {
-        case d: Double if d < minDistance + range => DistanceType.short
-        case d: Double if d < minDistance + (numClasses - 1) * range => DistanceType.medium
-        case _ => DistanceType.long
+        d: Double =>
+          val index = Math.min(((d - minDistance) / range).toInt, numClasses - 1)
+          distanceTypes(index)
       }
       .join(rddFlights)
       .map { case (_, (classification, (_, month, totalFare))) => ((month, classification), (totalFare, 1)) }
@@ -139,10 +140,9 @@ object MainApplication {
 
     avgDistances
       .mapValues { d =>
-        val (minDist, range) = broadcastStats.value
-        if (d < minDist + range) "short"
-        else if (d < minDist + 2 * range) "medium"
-        else "long"
+        val (minDistance, range) = broadcastStats.value
+        val index = Math.min(((d - minDistance) / range).toInt, numClasses - 1)
+        distanceTypes(index)
       }
       // (k,v) => ((startingAirport, destinationAirport), classification)
       .join(rddFlights)
