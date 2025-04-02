@@ -1,6 +1,7 @@
 import org.apache.spark.HashPartitioner
 import org.apache.spark.sql.{SaveMode, SparkSession}
 import org.apache.spark.storage.StorageLevel.MEMORY_AND_DISK_SER
+import org.apache.spark.util.SizeEstimator
 import org.slf4j.LoggerFactory
 import utils.{Commons, DistanceType}
 
@@ -9,17 +10,18 @@ import utils.{Commons, DistanceType}
  */
 object MainApplication {
 
-  private val datasetsPath = "datasets/"
-  private val fileName = "itineraries-sample02.csv"
+  private val numParams = 2
+  private val datasetsPath = "datasets/big/"
+  private val fileName = "itineraries-sample33.csv"
   private val outputPathJobNotOptimized = "output/jobNotOptimized"
   private val outputPathJobOptimized = "output/jobOptimized"
   private val distanceTypes = DistanceType.values.toArray
   private val numClasses = DistanceType.values.size
   private val logger = LoggerFactory.getLogger(this.getClass)
-  private val numParams = 2
 
   def main(args: Array[String]): Unit = {
     val spark = SparkSession.builder.appName("Flight Prices Job").getOrCreate()
+    //    spark.sparkContext.setLogLevel("ERROR")
 
     if (args.length != numParams) {
       logger.error("The first parameter should indicate the deployment mode (\"local\" or \"remote\")")
@@ -31,21 +33,22 @@ object MainApplication {
     val job = args(1).toInt
     val writeMode = if (deploymentMode == "sharedRemote") "remote" else deploymentMode
     val inputPath = Commons.getDatasetPath(deploymentMode, datasetsPath + fileName)
+    logger.info(inputPath)
     job match {
       case 1 => jobNotOptimized(spark, inputPath, writeMode)
       case 2 => jobOptimized(spark, inputPath, writeMode)
     }
 
-    if (deploymentMode == "local") {
-      logger.info(spark.sparkContext.getConf.get("spark.driver.memory")) // 4g
-      logger.info(spark.sparkContext.getConf.get("spark.driver.cores")) // 4
-    }
-    if (deploymentMode == "remote") {
-      logger.info(spark.sparkContext.getConf.get("spark.executor.memory")) // 5g
-      logger.info(spark.sparkContext.getConf.get("spark.executor.cores")) // 2
-      logger.info(spark.sparkContext.getConf.get("spark.executor.instances")) // 6
-    }
-    logger.info(spark.sparkContext.defaultParallelism.toString) // local:4 remote: 2
+    //    if (deploymentMode == "local") {
+    //      logger.info(spark.sparkContext.getConf.get("spark.driver.memory")) // 4g
+    //      logger.info(spark.sparkContext.getConf.get("spark.driver.cores")) // 4
+    //    }
+    //    if (deploymentMode == "remote") {
+    //      logger.info(spark.sparkContext.getConf.get("spark.executor.memory")) // 5g
+    //      logger.info(spark.sparkContext.getConf.get("spark.executor.cores")) // 2
+    //      logger.info(spark.sparkContext.getConf.get("spark.executor.instances")) // 6
+    //    }
+    //    logger.info(spark.sparkContext.defaultParallelism.toString) // local:4 remote: 10 or 4
   }
 
   /**
@@ -61,7 +64,8 @@ object MainApplication {
     import sqlContext.implicits._
 
     logger.info("Job Not Optimized")
-    val outputPath = Commons.getDatasetPath(writeMode, outputPathJobNotOptimized)
+    val outputPath = Commons.getDatasetPath(writeMode, outputPathJobNotOptimized + "33")
+    logger.info(outputPath)
 
     val rddFlights = sc.textFile(inputPath).flatMap(FlightParser.parseFlightLine)
       .map(flight => ((flight.startingAirport, flight.destinationAirport),
@@ -90,7 +94,8 @@ object MainApplication {
       }
       .join(rddFlights)
       .map { case (_, (classification, (_, month, totalFare))) => ((month, classification), (totalFare, 1)) }
-      .reduceByKey((acc, totalFare) => (acc._1 + totalFare._1, acc._2 + totalFare._2))
+      .reduceByKey((acc, totalFare) =>
+        (BigDecimal(acc._1 + totalFare._1).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble, acc._2 + totalFare._2))
       .map { case ((month, classification), (sumTotalFare: Double, count: Int)) => (month, classification, sumTotalFare / count) }
       .coalesce(1)
       .toDF().write.format("csv").mode(SaveMode.Overwrite).save(outputPath)
@@ -109,9 +114,10 @@ object MainApplication {
     import sqlContext.implicits._
 
     logger.info("Job Optimized")
-    val outputPath = Commons.getDatasetPath(writeMode, outputPathJobOptimized)
+    val outputPath = Commons.getDatasetPath(writeMode, outputPathJobOptimized + "33")
+    logger.info(outputPath)
 
-    val numPartitions = spark.sparkContext.defaultParallelism
+    val numPartitions = 24
     val p = new HashPartitioner(numPartitions)
 
     val rddFlights = sc.textFile(inputPath).flatMap(FlightParser.parseFlightLine)
@@ -120,15 +126,17 @@ object MainApplication {
         (flight.totalTravelDistance, flight.flightMonth, flight.totalFare)))
       .partitionBy(p)
       .persist(MEMORY_AND_DISK_SER)
+    logger.info(s"Size of rddFlights: ${SizeEstimator.estimate(rddFlights)} bytes")
 
     val avgDistances = rddFlights
       .aggregateByKey((0.0, 0))(
         (acc, travelDistance) => (acc._1 + travelDistance._1, acc._2 + 1),
         (acc1, acc2) => (acc1._1 + acc2._1, acc1._2 + acc2._2)
       )
-      // (k,v) => ((startingAirport, destinationAirport), avgDistance)
+      //(k,v) => ((startingAirport, destinationAirport), avgDistance)
       .mapValues { case (sumDistance, count) => sumDistance / count }
-      .cache()
+      .persist(MEMORY_AND_DISK_SER)
+    logger.info(s"Size of avgDistances: ${SizeEstimator.estimate(avgDistances)} bytes")
 
     val (minDistance, maxDistance) = avgDistances
       .aggregate((Double.MaxValue, Double.MinValue))(
@@ -137,10 +145,11 @@ object MainApplication {
       )
 
     val broadcastStats = spark.sparkContext.broadcast((minDistance, (maxDistance - minDistance) / numClasses))
+    logger.info(s"Size of broadcastStats: ${SizeEstimator.estimate(broadcastStats.value)} bytes")
 
     avgDistances
       .mapValues { d =>
-        val (minDistance, range) = broadcastStats.value
+        val (minDistance, range) = broadcastStats.value // 40 bytes
         val index = Math.min(((d - minDistance) / range).toInt, numClasses - 1)
         distanceTypes(index)
       }
@@ -153,5 +162,4 @@ object MainApplication {
       .coalesce(1)
       .toDF().write.format("csv").mode(SaveMode.Overwrite).save(outputPath)
   }
-
 }

@@ -66,7 +66,6 @@ object Commons {
    * @return A string representing the resolved dataset path.
    */
   def getDatasetPath(deploymentMode: String, path: String): String = {
-    println(getDatasetPath(deploymentMode, path, path))
     getDatasetPath(deploymentMode, path, path)
   }
 }
