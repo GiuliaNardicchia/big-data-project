@@ -1,9 +1,6 @@
 
 # Progetto - Big Data course (81932), University of Bologna
 
-Giulia Nardicchia - [giulia.nardicchia@studio.unibo.it](mailto:giulia.nardicchia@studio.unibo.it)
-
-
 ## Datasets
 
 Il dataset originale è stato fornito da Kaggle al seguente link: [Flight Prices](https://www.kaggle.com/datasets/dilwong/flightprices/) *(31.09 GB)*.
@@ -49,7 +46,14 @@ Per avviare una nuova sessione su AWS, eseguire lo script [start_aws_session.sh]
   ./aws/start_aws_session.sh
 ```
 
-Eseguire lo script [create_aws_cluster.sh](/aws/create_aws_cluster.sh) per avviare un cluster Amazon EMR utilizzando Hadoop e Spark, avente le seguenti caratteristiche:
+Eseguire lo script [create_aws_cluster.sh](/aws/create_aws_cluster.sh) per avviare un cluster Amazon EMR utilizzando Hadoop e Spark.
+Al suo interno viene eseguito anche lo script [security_group_ingress.sh](./aws/security_group_ingress.sh) per creare un *Security Group* di nome `ElasticMapReduce-master` (se non esiste già) con le seguenti regole:
+- `IpProtocol`: `tcp`
+- `FromPort`: `22`
+- `ToPort`: `22`
+- `IpRanges`: `[{CidrIp=0.0.0.0/0}]`
+
+Il cluster creato avrà le seguenti caratteristiche:
 - Versione di EMR: `emr-7.3.0`
 - Applicazioni installate: `Hadoop` e `Spark`
 - Gruppo di istanze:
@@ -99,3 +103,6 @@ Sotto la voce *Additional customization*, selezionare *Spark configuration* ed *
   - `Executor cores`: `2` 
   - `Executor number`: `6`
   - `Executor memory`: `5g`
+
+## Author
+- [Giulia Nardicchia](https://github.com/GiuliaNardicchia) ([giulia.nardicchia@studio.unibo.it](mailto:giulia.nardicchia@studio.unibo.it))

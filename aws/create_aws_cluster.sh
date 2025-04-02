@@ -3,10 +3,9 @@
 read -p "Enter AWS PROFILE:" AWS_PROFILE
 read -p "Enter KEY PAIR NAME:" KEY_PAIR_NAME
 
-# echo "EC2 authorize security group ingress"
-# aws ec2 authorize-security-group-ingress --group-name ElasticMapReduce-master --ip-permissions IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges="[{CidrIp=0.0.0.0/0}]"
-
 export AWS_PROFILE="$AWS_PROFILE"
+
+./aws/security_group_ingress.sh
 
 echo "EMR Create cluster"
 CLUSTER_ID=$(aws emr create-cluster \
@@ -22,10 +21,15 @@ CLUSTER_ID=$(aws emr create-cluster \
 echo "Cluster ID: $CLUSTER_ID"
 
 echo "Waiting for the cluster to be ready"
+START_TIME=$(date +%s)
 while true; do
     STATUS=$(aws emr describe-cluster --cluster-id "$CLUSTER_ID" --query 'Cluster.Status.State' --output text)
     if [[ "$STATUS" == "WAITING" ]]; then
-        echo "Cluster status: $STATUS"
+        END_TIME=$(date +%s)
+        ELAPSED_TIME=$((END_TIME - START_TIME))
+        ELAPSED_MIN=$((ELAPSED_TIME / 60))
+        ELAPSED_SEC=$((ELAPSED_TIME % 60))
+        echo "Cluster status: $STATUS. It took ${ELAPSED_MIN}m ${ELAPSED_SEC}s to reach this state."
         break
     fi
     echo "Cluster status: $STATUS. I will try again in 10 seconds"
