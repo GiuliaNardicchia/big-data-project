@@ -37,3 +37,43 @@ Per avviare lo History Server, aprire un Git Bash nella cartella di installazion
 ```
 
 Per visualizzare i file di history, è possibile accedere alla *Spark UI* all'indirizzo: http://localhost:18080.
+
+## Analisi delle prestazioni
+
+### Confronto dei tempi di esecuzione
+
+Di seguito sono riportati i tempi di esecuzione dei *job* eseguiti in **locale** e su **AWS**, sia nella versione **non
+ottimizzata** che **ottimizzata**.
+
+| **Sample** | **Execution Type** | **Not Optimized (min)** | **Optimized (min)** |
+|------------|--------------------|-------------------------|---------------------|
+| 2          | local              | 0,35                    | 0,33                |
+| 2          | remote             | 0,58                    | 0,58                |
+| 16         | local              | 4,6                     | 3,7                 |
+| 16         | remote             | 2,3                     | 1,8                 |
+| 33         | local              | 7,4                     | 7,0                 |
+| 33         | remote             | 3,7                     | 2,8                 |
+
+In generale, i *job* ottimizzati hanno mostrato un miglioramento nei tempi, rispetto a quelli non ottimizzati.
+Per quanto riguarda i sample piccoli, le differenze di tempo sono minime, mentre per i sample più grandi la differenza
+si nota maggiormente.
+
+### Confronto delle esecuzioni
+
+![TODO](/history/img/remote/remote-jobs-no-sample33.png)
+
+![TODO](/history/img/remote/remote-jobs-o-sample33.png)
+
+![TODO](/history/img/remote/remote-stages-no-sample33.png)
+
+![TODO](/history/img/remote/remote-stages-o-sample33.png)
+
+| ![TODO](/history/img/remote/remote-stages-1-dag-no-sample33.png) | ![TODO](/history/img/remote/remote-stages-1-dag-o-sample33.png) |
+|------------------------------------------------------------------|-----------------------------------------------------------------|
+
+| ![TODO](/history/img/remote/remote-stages-2-dag-no-sample33.png) | ![TODO](/history/img/remote/remote-stages-2-dag-o-sample33.png) |
+|------------------------------------------------------------------|-----------------------------------------------------------------|
+
+![TODO](/history/img/remote/remote-executors-no-sample33.png)
+
+![TODO](/history/img/remote/remote-executors-o-sample33.png)
