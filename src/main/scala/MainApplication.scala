@@ -21,7 +21,6 @@ object MainApplication {
 
   def main(args: Array[String]): Unit = {
     val spark = SparkSession.builder.appName("Flight Prices Job").getOrCreate()
-    //    spark.sparkContext.setLogLevel("ERROR")
 
     if (args.length != numParams) {
       logger.error("The first parameter should indicate the deployment mode (\"local\" or \"remote\")")
@@ -39,16 +38,15 @@ object MainApplication {
       case 2 => jobOptimized(spark, inputPath, writeMode)
     }
 
-    //    if (deploymentMode == "local") {
-    //      logger.info(spark.sparkContext.getConf.get("spark.driver.memory")) // 4g
-    //      logger.info(spark.sparkContext.getConf.get("spark.driver.cores")) // 4
-    //    }
-    //    if (deploymentMode == "remote") {
-    //      logger.info(spark.sparkContext.getConf.get("spark.executor.memory")) // 5g
-    //      logger.info(spark.sparkContext.getConf.get("spark.executor.cores")) // 2
-    //      logger.info(spark.sparkContext.getConf.get("spark.executor.instances")) // 6
-    //    }
-    //    logger.info(spark.sparkContext.defaultParallelism.toString) // local:4 remote: 10 or 4
+    /*if (deploymentMode == "local") {
+      logger.info(spark.sparkContext.getConf.get("spark.driver.memory")) // 4g
+      logger.info(spark.sparkContext.getConf.get("spark.driver.cores")) // 4
+    }
+    if (deploymentMode == "remote") {
+      logger.info(spark.sparkContext.getConf.get("spark.executor.memory")) // 5g
+      logger.info(spark.sparkContext.getConf.get("spark.executor.cores")) // 2
+      logger.info(spark.sparkContext.getConf.get("spark.executor.instances")) // 6
+    }*/
   }
 
   /**
@@ -64,10 +62,11 @@ object MainApplication {
     import sqlContext.implicits._
 
     logger.info("Job Not Optimized")
-    val outputPath = Commons.getDatasetPath(writeMode, outputPathJobNotOptimized + "33")
+    val outputPath = Commons.getDatasetPath(writeMode, outputPathJobNotOptimized)
     logger.info(outputPath)
 
     val rddFlights = sc.textFile(inputPath).flatMap(FlightParser.parseFlightLine)
+      // (k,v) => (startingAirport, destinationAirport), (totalTravelDistance, flightDate, totalFare))
       .map(flight => ((flight.startingAirport, flight.destinationAirport),
         (flight.totalTravelDistance, flight.flightMonth, flight.totalFare)))
 
@@ -76,6 +75,7 @@ object MainApplication {
         (acc, travelDistance) => (acc._1 + travelDistance._1, acc._2 + 1),
         (acc1, acc2) => (acc1._1 + acc2._1, acc1._2 + acc2._2)
       )
+      // (k,v) => ((startingAirport, destinationAirport), avgDistance)
       .mapValues { case (sumDistance, count) => sumDistance / count }
 
     val (minDistance, maxDistance) = avgDistances
@@ -92,11 +92,15 @@ object MainApplication {
           val index = Math.min(((d - minDistance) / range).toInt, numClasses - 1)
           distanceTypes(index)
       }
+      // (k,v) => ((startingAirport, destinationAirport), classification)
       .join(rddFlights)
+      // (k,v) => ((startingAirport, destinationAirport), (classification, (totalTravelDistance, flightDate, totalFare)))
       .map { case (_, (classification, (_, month, totalFare))) => ((month, classification), (totalFare, 1)) }
+      // (k,v) => ((month, classification), (totalFare, 1))
       .reduceByKey((acc, totalFare) =>
         (BigDecimal(acc._1 + totalFare._1).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble, acc._2 + totalFare._2))
       .map { case ((month, classification), (sumTotalFare: Double, count: Int)) => (month, classification, sumTotalFare / count) }
+      // (k,v) => (month, classification, avgTotalFare)
       .coalesce(1)
       .toDF().write.format("csv").mode(SaveMode.Overwrite).save(outputPath)
   }
@@ -114,7 +118,7 @@ object MainApplication {
     import sqlContext.implicits._
 
     logger.info("Job Optimized")
-    val outputPath = Commons.getDatasetPath(writeMode, outputPathJobOptimized + "33")
+    val outputPath = Commons.getDatasetPath(writeMode, outputPathJobOptimized)
     logger.info(outputPath)
 
     val numPartitions = 24
@@ -155,10 +159,13 @@ object MainApplication {
       }
       // (k,v) => ((startingAirport, destinationAirport), classification)
       .join(rddFlights)
+      // (k,v) => ((startingAirport, destinationAirport), (classification, (totalTravelDistance, flightDate, totalFare)))
       .map { case (_, (classification, (_, month, totalFare))) => ((month, classification), (totalFare, 1)) }
+      // (k,v) => ((month, classification), (totalFare, 1))
       .reduceByKey((acc, totalFare) =>
         (BigDecimal(acc._1 + totalFare._1).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble, acc._2 + totalFare._2))
       .map { case ((month, classification), (sumTotalFare, count)) => (month, classification, sumTotalFare / count) }
+      // (k,v) => (month, classification, avgTotalFare)
       .coalesce(1)
       .toDF().write.format("csv").mode(SaveMode.Overwrite).save(outputPath)
   }
