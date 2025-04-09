@@ -24,10 +24,9 @@ tendenze e delle eventuali fluttuazioni stagionali.
 L’analisi dei grafici suggerisce che:
 
 - le tariffe per le tratte lunghe sono mediamente più alte rispetto a quelle per distanze medie e corte;
-- nei mesi estivi (maggio-luglio) si nota un aumento dei prezzi, specialmente per le tratte lunghe, seguita da una
+- nei mesi estivi si nota un aumento dei prezzi, specialmente per le tratte lunghe, seguita da una
   riduzione nei mesi successivi;
-- la variazione dei prezzi risulta più marcata per le tratte lunghe rispetto a quelle brevi, suggerendo che le tariffe 
-- per le distanze più corte siano meno soggette a oscillazioni stagionali.
+- la variazione dei prezzi risulta più marcata per le tratte lunghe rispetto a quelle brevi, suggerendo che le tariffe per le distanze più corte siano meno soggette a oscillazioni stagionali.
 
 ## Conclusioni
 

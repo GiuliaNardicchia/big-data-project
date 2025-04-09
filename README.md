@@ -26,13 +26,14 @@ I datasets usati per questo progetto sono stati campionati sul dataset originale
 - `aws/` contiene gli script per avviare una sessione su [Amazon Web Services](https://www.awsacademy.com/vforcesite/LMS_Login) e creare un cluster, spiegati nella sezione [AWS](#amazon-web-services-aws) che segue
   - [start_aws_session.sh](aws/start_aws_session.sh)
   - [create_aws_cluster.sh](aws/create_aws_cluster.sh)
+  - [security_group_ingress.sh](aws/security_group_ingress.sh)
 - `history/` contiene la cronologia dell'esecuzione dei *job*
   - [README.md](history/README.md)
-- `reports/` contiene report generati con Power BI
+- `reports/` contiene il report generato con Power BI
   - [README.md](reports/README.md)
 
 ## Amazon Web Services (AWS)
-I seguenti *script* sono stati creati per gestire più facilmente le operazioni da effettuare a linea di comando. Sono stati eseguiti con la *shell* `Git Bash`.
+I seguenti *script* sono stati creati per gestire più facilmente le operazioni da effettuare da linea di comando. Sono stati eseguiti con la *shell* `Git Bash`.
 
 Per avviare una nuova sessione su AWS, eseguire lo script [start_aws_session.sh](/aws/start_aws_session.sh). Verranno richieste le seguenti informazioni:
 - `AWS PROFILE NAME`
@@ -65,13 +66,14 @@ In *input* verrà richiesto l'inserimento di: `AWS PROFILE NAME` e `KEY PAIR NAM
   ./aws/create_aws_cluster.sh
 ```
 
-## Local configuration
+## Build .jar
 Per ottenere il *.jar* dell'applicazione, eseguire a linea di comando:
 ```shell
   ./gradlew
 ```
 Verrà salvato all'interno della cartella `build/libs/`.
 
+## Local configuration
 *Spark local configurations*:
 - `Spark home`: `C:/spark-3.5.1-bin-hadoop3`
 - `Application`: `build/libs/ProjectBigData.jar`
@@ -93,7 +95,7 @@ All'interno del file `conf/spark-defaults.conf` nella cartella `C:/spark-3.5.1-b
     - `Private key file`: inserire il path del file `.ppk`
 - `Application`: `build/libs/ProjectBigData.jar`
 - `Class`: `MainApplication`
-- `Run arguments`: `remote 1` oppure `remote 2`
+- `Run arguments`: `remote 1`/`sharedRemote 1` oppure `remote 2`/`sharedRemote 2`
 
 Sotto la voce *Additional customization*, selezionare *Spark configuration* ed *Executor*.
 - `Spark configuration`

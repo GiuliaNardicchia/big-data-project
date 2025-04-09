@@ -35,7 +35,7 @@ seguente comando:
   bin/spark-class.cmd org.apache.spark.deploy.history.HistoryServer
 ```
 
-Per visualizzare i file di *history*, è possibile accedere alla *Spark UI* all'indirizzo: http://localhost:18080.
+Per visualizzare i file è possibile accedere alla *Spark UI* all'indirizzo: http://localhost:18080.
 
 ## Analisi delle prestazioni
 

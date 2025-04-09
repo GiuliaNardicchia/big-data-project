@@ -37,16 +37,6 @@ object MainApplication {
       case 1 => jobNotOptimized(spark, inputPath, writeMode)
       case 2 => jobOptimized(spark, inputPath, writeMode)
     }
-
-    /*if (deploymentMode == "local") {
-      logger.info(spark.sparkContext.getConf.get("spark.driver.memory")) // 4g
-      logger.info(spark.sparkContext.getConf.get("spark.driver.cores")) // 4
-    }
-    if (deploymentMode == "remote") {
-      logger.info(spark.sparkContext.getConf.get("spark.executor.memory")) // 5g
-      logger.info(spark.sparkContext.getConf.get("spark.executor.cores")) // 2
-      logger.info(spark.sparkContext.getConf.get("spark.executor.instances")) // 6
-    }*/
   }
 
   /**
